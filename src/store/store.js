@@ -12,3 +12,51 @@ const useStore = create((set) => ({
   setTasks: (tasks) => set({ tasks }),
 }));
 export default useStore; 
+
+// import { create } from 'zustand';
+
+// const useStore = create((set) => ({
+//   tasksByStatus: {
+//     'To Do': [
+//       { id: '1', title: 'User Interview', dueDate: 'Tomorrow', collaborators: ['Alice', 'Bob'] },
+//       { id: '5', title: 'Design System', comments: 3, reports: 2, collaborators: ['Daisy'] },
+//     ],
+//     'In Progress': [
+//       { id: '2', title: 'Design UI', dueDate: 'Tomorrow', priority: 'High', collaborators: ['John', 'Sam', 'Leo', 'Tom'] },
+//       { id: '6', title: 'Check Clients Feedback', dueDate: '22 April, 2022', collaborators: ['Mia', 'Ken'] },
+//     ],
+//     'Approved': [
+//       { id: '3', title: 'Research Prototype', comments: 35, likes: 243, attachments: 2, collaborators: ['Ella'] },
+//       { id: '7', title: 'Detail Page', comments: 6, likes: 28, collaborators: ['Zoe'] },
+//     ],
+//     'Reject': [
+//       { id: '4', title: 'Group Management', comments: 329, attachments: 1, collaborators: ['Sam', 'Max', 'Zoe'] },
+//       { id: '8', title: 'Slider Controls', collaborators: ['Rick'] },
+//     ],
+//   },
+
+//   setTasksByStatus: (updated) => set({ tasksByStatus: updated }),
+
+//   moveTask: ({ source, destination }) =>
+//     set((state) => {
+//       const sourceList = [...state.tasksByStatus[source.droppableId]];
+//       const destinationList =
+//         source.droppableId === destination.droppableId
+//           ? sourceList
+//           : [...state.tasksByStatus[destination.droppableId]];
+
+//       const [moved] = sourceList.splice(source.index, 1);
+//       moved.status = destination.droppableId;
+//       destinationList.splice(destination.index, 0, moved);
+
+//       return {
+//         tasksByStatus: {
+//           ...state.tasksByStatus,
+//           [source.droppableId]: sourceList,
+//           [destination.droppableId]: destinationList,
+//         },
+//       };
+//     }),
+// }));
+
+// export default useStore;

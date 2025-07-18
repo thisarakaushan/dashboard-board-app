@@ -1,3 +1,5 @@
+// Updated `Dashboard` and `TaskCard` components with drag-and-drop logic retained and UI improved based on the reference image.
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,6 +9,7 @@ import SideMenu from '@/components/SideMenu';
 import Header from '@/components/Header';
 import BodyUpper from '@/components/BodyUpper';
 import TaskCard from '@/components/TaskCard';
+import { Plus, MoreVertical } from 'lucide-react';
 
 const statuses = ['To Do', 'In Progress', 'Approved', 'Reject'];
 
@@ -18,14 +21,6 @@ export default function Dashboard() {
   useEffect(() => {
     const savedTasks = localStorage.getItem('tasks');
     if (savedTasks) setTasks(JSON.parse(savedTasks));
-    else setTasks([
-      { id: '1', title: 'User Interview', status: 'To Do', dueDate: 'Tomorrow', collaborators: ['user1', 'user2'] },
-      { id: '2', title: 'Design UI', status: 'In Progress', dueDate: 'Tomorrow', priority: 'High', collaborators: ['user1', 'user2', 'user3', 'user4'] },
-      { id: '3', title: 'Research Prototype', status: 'Approved', comments: 35, likes: 243, attachments: 2, collaborators: ['user1'] },
-      { id: '4', title: 'Group Management', status: 'Reject', comments: 329, attachments: 1, collaborators: ['user1', 'user2', 'user3'] },
-      { id: '5', title: 'Design System', status: 'To Do', comments: 3, reports: 8, collaborators: ['user1'] },
-      { id: '6', title: 'Check Clients Feedback', status: 'In Progress', dueDate: '02 April 2022', collaborators: ['user1', 'user2'] },
-    ]);
   }, [setTasks]);
 
   useEffect(() => {
@@ -46,6 +41,62 @@ export default function Dashboard() {
     task.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const getBodyContent = () => {
+    switch (selectedBoard) {
+      case 'Sport Xi Project':
+        return (
+          <>
+            <BodyUpper />
+            <div className="mt-4 bg-gray-200">
+              <DragDropContext onDragEnd={onDragEnd}>
+                <div className="flex space-x-4 overflow-x-auto">
+                  {statuses.map((status) => (
+                    <Droppable key={status} droppableId={status}>
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                          className="w-72 flex-shrink-0 p-3 rounded-lg border border-gray-200"
+                        >
+                          <div
+                            className={`flex items-center justify-between mb-3 p-2 rounded text-white font-semibold text-sm ${
+                              status === 'Approved'
+                                ? 'bg-green-500'
+                                : status === 'Reject'
+                                ? 'bg-red-500'
+                                : status === 'In Progress'
+                                ? 'bg-yellow-500'
+                                : 'bg-gray-400'
+                            }`}
+                          >
+                            <span>{status}</span>
+                            <div className="flex gap-1">
+                              <Plus className="w-4 h-4 cursor-pointer" />
+                              <MoreVertical className="w-4 h-4 cursor-pointer" />
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            {filteredTasks
+                              .filter((task) => task.status === status)
+                              .map((task, index) => (
+                                <TaskCard key={task.id} task={task} index={index} />
+                              ))}
+                            {provided.placeholder}
+                          </div>
+                        </div>
+                      )}
+                    </Droppable>
+                  ))}
+                </div>
+              </DragDropContext>
+            </div>
+          </>
+        );
+      default:
+        return <div className="p-4">Select a board to view content</div>;
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen bg-white">
       <Header
@@ -55,52 +106,7 @@ export default function Dashboard() {
       />
       <div className="flex flex-1">
         <SideMenu selectedBoard={selectedBoard} setSelectedBoard={setSelectedBoard} />
-        <main className="flex-1 p-4 overflow-auto">
-          {selectedBoard === 'Sport Xi Project' && (
-            <>
-              <BodyUpper />
-              <div className="mt-4">
-                <DragDropContext onDragEnd={onDragEnd}>
-                  <div className="flex space-x-4">
-                    {statuses.map((status) => (
-                      <Droppable key={status} droppableId={status}>
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}
-                            className="w-64 flex-shrink-0 bg-white p-2 rounded shadow"
-                          >
-                            <h2
-                              className={`text-xl font-semibold mb-2 p-2 rounded-t ${
-                                status === 'Approved'
-                                  ? 'bg-green-500 text-white'
-                                  : status === 'Reject'
-                                  ? 'bg-red-500 text-white'
-                                  : status === 'In Progress'
-                                  ? 'bg-yellow-500 text-white'
-                                  : 'bg-gray-400 text-white'
-                              }`}
-                            >
-                              {status}
-                            </h2>
-                            <div className="space-y-2">
-                              {filteredTasks
-                                .filter((task) => task.status === status)
-                                .map((task, index) => (
-                                  <TaskCard key={task.id} task={task} index={index} />
-                                ))}
-                              {provided.placeholder}
-                            </div>
-                          </div>
-                        )}
-                      </Droppable>
-                    ))}
-                  </div>
-                </DragDropContext>
-              </div>
-            </>
-          )}
-        </main>
+        <main className="flex-1 p-4 overflow-auto">{getBodyContent()}</main>
       </div>
     </div>
   );
