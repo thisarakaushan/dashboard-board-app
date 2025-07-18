@@ -1,5 +1,3 @@
-// Updated `Dashboard` and `TaskCard` components with drag-and-drop logic retained and UI improved based on the reference image.
-
 'use client';
 
 import { useState, useEffect } from 'react';
